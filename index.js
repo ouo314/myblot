@@ -1,5 +1,5 @@
 const width = 125;
-const height = 125;
+const height = 130;
 
 setDocDimensions(width, height);
 
@@ -18,35 +18,36 @@ drawLines([
     [gapR, barY],
     [width, barY]
   ]
-]);
+], { stroke: "blue" });
 
-// 波前
+// 平行波前
 const srcX = width / 2;
 const srcY = height - 10;
-const maxR = Math.sqrt(width * width + height * height);
-const waveL = 10; 
-const numP = 100; 
+const waveL = 10; // 波長
+const numWaves = (srcY - 10) / waveL; // 波前數量
+const waveSpacing = waveL; // 波前間距
 
-let curR = waveL;
 
-while (curR <= maxR) {
+for (let i = 0; i < numWaves; i++) {
+  const yOffset = srcY - (i + 1) * waveSpacing;
+  const line = [];
   const circle = [];
-
-  for (let i = 0; i < numP; i++) {
-    const angle = (i / numP) * 2 * Math.PI;
-    const x = srcX + curR * Math.cos(angle);
-    const y = srcY + curR * Math.sin(angle);
-    let block = false;
-
-    if (y < barY) {
+  
+  for (let x = 0; x <= width; x++) {
+    let blocked = false;
+    if (yOffset <= barY) {
+      
       if (x > gapR || x < gapL) {
-        block = true;
+        blocked = true;
       }
     }
-    if(!block) circle.push([x, y]);
-  }
-  circle.push(circle[0]);
 
-  drawLines([circle]);
-  curR += waveL;
+    if (!blocked) {
+      line.push([x, yOffset]);
+    }
+  }
+
+  if (line.length > 0) {
+    drawLines([line], { fill: "yellow" });
+  }
 }
