@@ -4,47 +4,49 @@ const height = 125;
 setDocDimensions(width, height);
 
 // 狹縫
-const barW = 20; 
-const gapW = 30; 
-const barH = height * 0.6; 
-const barY = (height - barH) / 2; 
-
+const barW = 20;
+const gapW = 30;
+const barY = 80;
+const gapL = (width - gapW) / 2;
+const gapR = (width + gapW) / 2;
 drawLines([
   [
     [0, barY],
-    [(width - gapW) / 2, barY]
+    [gapL, barY]
   ],
   [
-    [0, barY + barH],
-    [(width - gapW) / 2, barY + barH]
-  ],
-  [
-    [(width + gapW) / 2, barY],
+    [gapR, barY],
     [width, barY]
-  ],
-  [
-    [(width + gapW) / 2, barY + barH],
-    [width, barY + barH]
   ]
 ]);
 
 // 波前
-const sourceX = width / 2;
-const sourceY = height - 10;
+const srcX = width / 2;
+const srcY = height - 10;
 const maxR = Math.sqrt(width * width + height * height);
-const numC = 10;
+const waveL = 10; 
+const numP = 100; 
 
-for (let i = 1; i <= numC; i++) {
-  const r = (i / numC) * maxR;
-  const numP = Math.max(16, Math.floor(r * 2));
+let curR = waveL;
+
+while (curR <= maxR) {
   const circle = [];
 
-  for (let j = 0; j < numP; j++) {
-    const angle = (j / numP) * 2 * Math.PI;
-    const x = sourceX + r * Math.cos(angle);
-    const y = sourceY + r * Math.sin(angle);
-    circle.push([x, y]);
+  for (let i = 0; i < numP; i++) {
+    const angle = (i / numP) * 2 * Math.PI;
+    const x = srcX + curR * Math.cos(angle);
+    const y = srcY + curR * Math.sin(angle);
+    let block = false;
+
+    if (y < barY) {
+      if (x > gapR || x < gapL) {
+        block = true;
+      }
+    }
+    if(!block) circle.push([x, y]);
   }
+  circle.push(circle[0]);
 
   drawLines([circle]);
+  curR += waveL;
 }
